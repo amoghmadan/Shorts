@@ -8,10 +8,10 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 
 
-def get_expiry(days=7):
-    """."""
+def generate_key():
+        """."""
 
-    return timezone.now() + timezone.timedelta(days=days)
+        return binascii.hexlify(os.urandom(20)).decode()
 
 
 class Service(models.Model):
@@ -19,7 +19,7 @@ class Service(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("User"))
     name = models.CharField(_("Name"), max_length=255)
-    token = models.CharField(_("Token"), max_length=40)
+    token = models.CharField(_("Token"), max_length=40, default=generate_key)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -29,12 +29,6 @@ class Service(models.Model):
         verbose_name = _("Service")
         verbose_name_plural = _("Services")
         unique_together = ("user", "name")
-    
-    @classmethod
-    def generate_key(cls):
-        """."""
-
-        return binascii.hexlify(os.urandom(20)).decode()
 
     def __str__(self):
         """."""
@@ -44,8 +38,6 @@ class Service(models.Model):
     def save(self, *args, **kwargs):
         """."""
 
-        if not self.token:
-            self.token = self.generate_key()
         super().save(*args, **kwargs)
 
 
@@ -57,7 +49,7 @@ class Link(models.Model):
     minified = models.CharField(_("Minified"), max_length=8, unique=True)
     created = models.DateTimeField(_("Created"), auto_now_add=True)
     updated = models.DateTimeField(_("Updated"), auto_now=True)
-    expiry = models.DateTimeField(_("Expiry"), default=get_expiry)
+    expiry = models.DateTimeField(_("Expiry"))
 
     class Meta:
         """."""

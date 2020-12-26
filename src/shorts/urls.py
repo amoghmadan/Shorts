@@ -15,14 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from minify.views import RedirectView
+from .views import RedirectView
 
 api_patters = [
     path('minify/', include('minify.urls')),
 ]
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/portal/', admin.site.urls),
     path('<str:minified>', RedirectView.as_view()),
     path('api/', include(api_patters)),
 ]

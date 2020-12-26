@@ -1,9 +1,7 @@
-from rest_framework import routers
+from django.urls import path
 
 from . import views
 
-router = routers.DefaultRouter()
-router.register("services", views.ServiceViewSet)
-router.register("links", views.LinkViewSet)
-
-urlpatterns = router.urls
+urlpatterns = [
+    path("put-link/", views.PutLinkView.as_view()),
+]
