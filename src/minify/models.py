@@ -1,13 +1,17 @@
 import os
 import hashlib
 import binascii
-from datetime import timedelta
 
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import get_user_model()
+from django.contrib.auth.models import User
 
-User = get_user_model()
+
+def get_expiry(days=7):
+    """."""
+
+    return timezone.now() + timezone.timedelta(days=days)
 
 
 class Service(models.Model):
@@ -53,7 +57,7 @@ class Link(models.Model):
     minified = models.CharField(_("Minified"), max_length=8, unique=True)
     created = models.DateTimeField(_("Created"), auto_now_add=True)
     updated = models.DateTimeField(_("Updated"), auto_now=True)
-    expiry = models.DateTimeField(_("Expiry"))
+    expiry = models.DateTimeField(_("Expiry"), default=get_expiry)
 
     class Meta:
         """."""
@@ -77,6 +81,5 @@ class Link(models.Model):
         """."""
 
         if not self.minified:
-            self.minified_link = self.generate_mini_key(self.service_id, self.url)
-        self.expiry_at = self.updated_at + timedelta(days=7)
+            self.minified = self.generate_mini_key(self.service_id, self.url)
         super().save(*args, **kwargs)

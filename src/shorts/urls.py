@@ -14,8 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from minify.views import RedirectView
+
+api_patters = [
+    path('minify/', include('minify.urls')),
+]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('<str:minified>', RedirectView.as_view()),
+    path('api/', include(api_patters)),
 ]
